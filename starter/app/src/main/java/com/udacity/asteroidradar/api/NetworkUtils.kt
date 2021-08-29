@@ -1,16 +1,16 @@
 package com.udacity.asteroidradar.api
 
-import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.network.NetworkAsteriod
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
+fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<NetworkAsteriod> {
     val nearEarthObjectsJson = jsonResult.getJSONObject("near_earth_objects")
 
-    val asteroidList = ArrayList<Asteroid>()
+    val networkAsteroidList = ArrayList<NetworkAsteriod>()
 
     val nextSevenDaysFormattedDates = getNextSevenDaysFormattedDates()
     for (formattedDate in nextSevenDaysFormattedDates) {
@@ -33,13 +33,15 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
             val isPotentiallyHazardous = asteroidJson
                 .getBoolean("is_potentially_hazardous_asteroid")
 
-            val asteroid = Asteroid(id, codename, formattedDate, absoluteMagnitude,
-                estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous)
-            asteroidList.add(asteroid)
+            val asteroid = NetworkAsteriod(
+                id, codename, formattedDate, absoluteMagnitude,
+                estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous
+            )
+            networkAsteroidList.add(asteroid)
         }
     }
 
-    return asteroidList
+    return networkAsteroidList
 }
 
 private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
@@ -54,4 +56,17 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     }
 
     return formattedDateList
+}
+
+object AsteroidQueryDateParams {
+
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+
+    fun getDateParams(): Pair<String, String> {
+        val calendar = Calendar.getInstance()
+        val startDate = dateFormat.format(calendar.time)
+        calendar.add(Calendar.DAY_OF_YEAR, Constants.DEFAULT_END_DATE_DAYS)
+        val endDate = dateFormat.format(calendar.time)
+        return Pair(startDate, endDate)
+    }
 }

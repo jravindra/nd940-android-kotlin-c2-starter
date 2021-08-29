@@ -61,6 +61,11 @@ dependencies {
     // Moshi for parsing the JSON format
     implementation "com.squareup.moshi:moshi:$version_moshi"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
+    implementation "com.squareup.retrofit2:converter-scalars:$version_retrofit"
+
+
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
 
     // Joda time library for dealing with time
     implementation "joda-time:joda-time:$version_joda"
