@@ -13,7 +13,7 @@ class RefreshDataWorker(context: Context, params: WorkerParameters) : CoroutineW
     }
 
     override suspend fun doWork(): Result {
-        val database = AsteroidDatabase.getDatabaseInstance(applicationContext).asteroidDao()
+        val database = AsteroidDatabase.getDatabaseInstance(applicationContext)
         val repository = AsteroidsRepository(database)
         return try {
             repository.refreshAsteroids()

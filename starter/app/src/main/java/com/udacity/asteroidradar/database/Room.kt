@@ -14,17 +14,17 @@ interface AsteriodDao {
     fun getPicOfTheDay(): LiveData<DatabasePictureOfTheDay?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg asteroid: DatabaseAsteroid)
+    fun insertAll(vararg asteroid: DatabaseAsteroid)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertPicOfTheDay(pod: DatabasePictureOfTheDay)
+    fun insertPicOfTheDay(pod: DatabasePictureOfTheDay)
 
     // Delete one day or less old asteroid data
     @Query("delete from asteroid where date(close_approach_date) <= date('now', '-1 day')")
-    suspend fun deleteOldAsteroids()
+    fun deleteOldAsteroids()
 
     @Query("delete from pic_of_the_day where url not like :expectedUrl")
-    suspend fun deletePicOfTheDay(expectedUrl: String)
+    fun deletePicOfTheDay(expectedUrl: String)
 
     // Delete one day or less pic of the day data
 //    @Query("delete from pic_of_the_day where create_date <= date('now', '-1 day')")

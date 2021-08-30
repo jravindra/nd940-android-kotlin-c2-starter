@@ -31,10 +31,6 @@ import java.time.LocalDateTime
  * using them.
  */
 
-//@JsonClass(generateAdapter = true)
-//data class NetworkAsteriodContainer(val asteroids: List<NetworkAsteriod>)
-
-//@JsonClass(generateAdapter = true)
 data class NetworkAsteriod(
     val id: Long,
     val name: String,
@@ -66,7 +62,6 @@ fun NetworkPictureOfDay.asDatabaseModel(): DatabasePictureOfTheDay {
         mediaType = this.mediaType,
         title = this.title,
         url = this.url,
-//        createdDate = now()
     )
 }
 

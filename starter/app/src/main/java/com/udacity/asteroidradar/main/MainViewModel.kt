@@ -6,10 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.PictureOfTheDay
 import com.udacity.asteroidradar.api.AsteroidQueryDateParams
 import com.udacity.asteroidradar.database.AsteroidDatabase
-import com.udacity.asteroidradar.network.AsteroidApi
 import com.udacity.asteroidradar.repository.AsteroidsRepository
 import kotlinx.coroutines.launch
 import java.util.*
@@ -21,8 +19,10 @@ enum class AsteroidApiStatus { LOADING, ERROR, DONE }
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val database = AsteroidDatabase.getDatabaseInstance(application).asteroidDao()
+    private val database = AsteroidDatabase.getDatabaseInstance(application)
     private val asteroidRepository = AsteroidsRepository(database)
+
+    var pictureOfTheDay = asteroidRepository.pictureOfTheDay
     private var filter = AsteroidsFilter(asteroidRepository.asteroids)
 
     private val _filteredAsteroidList = MutableLiveData<List<Asteroid>>()
@@ -34,7 +34,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val status: LiveData<AsteroidApiStatus>
         get() = _status
 
-    var pictureOfTheDay: PictureOfTheDay? = asteroidRepository.pictureOfTheDay
 
     init {
         getAsteriodsData()
@@ -46,8 +45,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 asteroidRepository.refreshAsteroids()
                 asteroidRepository.refreshPictureOfTheDay()
-                pictureOfTheDay = asteroidRepository.pictureOfTheDay!!
-                filter = AsteroidsFilter(asteroidRepository.asteroids)
                 filter.asteroids.observeForever {
                     _filteredAsteroidList.value = filter.filteredAsteroids
                 }
@@ -56,20 +53,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 _status.value = AsteroidApiStatus.ERROR
                 _filteredAsteroidList.value = ArrayList<Asteroid>()
-                pictureOfTheDay = PictureOfTheDay("", "", "")
-                _status.value = AsteroidApiStatus.ERROR
             }
         }
     }
 
-    fun updateFilter(status: FilterOptions) {
-        filter.option = status
+    fun updateFilter(option: FilterOptions) {
+        filter.option = option
         _filteredAsteroidList.value = filter.filteredAsteroids
     }
 
 
     private class AsteroidsFilter(val asteroids: LiveData<List<Asteroid>?>) {
-        var option = FilterOptions.TODAY
+        var option = FilterOptions.SAVED
 
         val filteredAsteroids: List<Asteroid>
             get() =
